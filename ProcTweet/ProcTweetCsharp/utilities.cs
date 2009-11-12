@@ -63,11 +63,10 @@ namespace ProcTweetCsharp
         /// <param name="authToken">        The authorisation token. </param>
         /// <param name="tcInfo">           Information describing the Twitter client. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-
         public static void GetLastFriendsTweets(int numberOfTweets, OAuthToken authToken, TwitterClientInfo tcInfo)
         {
             var tweetWin = new TweetWin();
-            var ac = AccountInfo.GetTwitterAccountInfo("procule");
+            /*var ac = AccountInfo.GetTwitterAccountInfo();
 
             // Set background image from twitter
             var uri = new Uri(ac.Background);
@@ -77,7 +76,7 @@ namespace ProcTweetCsharp
             Image backimg = Image.FromStream(s);
 
             tweetWin.TweetPanel.BackgroundImage = backimg;
-            tweetWin.TweetPanel.BackColor = Color.Transparent;
+            tweetWin.TweetPanel.BackColor = Color.Transparent;*/
 
             string twitter = FluentTwitter.CreateRequest()
                 .AuthenticateWith(tcInfo.ConsumerKey, tcInfo.ConsumerSecret, authToken.Token, authToken.TokenSecret)
@@ -108,10 +107,6 @@ namespace ProcTweetCsharp
         }
         public static void Button1()
         {
-            const string ble = "http://www.shareprice.co.uk/TW.";
-            var reg = HttpUtility.UrlEncode(ble);
-
-            MessageBox.Show(reg);
         }
     }
 
