@@ -14,7 +14,6 @@ namespace ProcTweetCsharp
         public Tweet()
         {
             InitializeComponent();
-            TweetImage.ImageLocation = "http://a3.twimg.com/profile_images/239823909/buzznetphoto_normal.jpg";
             TweetText.Text = "Example of text being displayed by the control.";
             ltimeago.Text = "X moments ago.";
             lluser.Text = "foobar";
@@ -50,9 +49,11 @@ namespace ProcTweetCsharp
             // TweetImage
             // 
             this.TweetImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TweetImage.Image = global::ProcTweetCsharp.Properties.Resources.oiseaubleu;
+            this.TweetImage.InitialImage = global::ProcTweetCsharp.Properties.Resources.oiseaubleu;
             this.TweetImage.Location = new System.Drawing.Point(10, 10);
             this.TweetImage.Name = "TweetImage";
-            this.TweetImage.Size = new System.Drawing.Size(48, 48);
+            this.TweetImage.Size = new System.Drawing.Size(52, 52);
             this.TweetImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.TweetImage.TabIndex = 0;
             this.TweetImage.TabStop = false;

@@ -175,6 +175,7 @@ namespace ProcTweet {
 			this->tweetsFromFriendsToolStripMenuItem->Name = L"tweetsFromFriendsToolStripMenuItem";
 			this->tweetsFromFriendsToolStripMenuItem->Size = System::Drawing::Size(219, 22);
 			this->tweetsFromFriendsToolStripMenuItem->Text = L"25 tweets from friends";
+			this->tweetsFromFriendsToolStripMenuItem->Enabled = false;
 			this->tweetsFromFriendsToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWin::tweetsFromFriendsToolStripMenuItem_Click);
 			// 
 			// sstatus
