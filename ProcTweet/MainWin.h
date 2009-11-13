@@ -48,16 +48,25 @@ namespace ProcTweet {
             tcInfo->ConsumerKey = "5bNCGHgcKT53UFAisxj3lg";
             tcInfo->ConsumerSecret = "F7v9jw1nF0bPhFFS83WQan8xDVSurg0OaFAGabrJc";
 
-			if (ConfigurationManager::AppSettings["username"] != "")
+			this->logininfo = gcnew LoginInfo();
+			this->logininfo->Authtoken = gcnew OAuthToken;
+			this->logininfo->TcInfo = tcInfo;
+
+			if (ConfigurationManager::AppSettings["username"] != nullptr)
 			{
-				this->authtoken = gcnew OAuthToken;
-				this->authtoken->Token = ConfigurationManager::AppSettings["atoken"];
-				this->authtoken->TokenSecret = ConfigurationManager::AppSettings["atokens"];
-				llaccount->Text = ConfigurationManager::AppSettings["username"];
-				this->lastToolStripMenuItem->Enabled = true;
+				this->logininfo->Username = ConfigurationManager::AppSettings["username"];
+				this->logininfo->Authtoken->Token = ConfigurationManager::AppSettings["atoken"];
+				this->logininfo->Authtoken->TokenSecret = ConfigurationManager::AppSettings["atokens"];
+				if (this->logininfo->Authtoken->Token != nullptr && this->logininfo->Authtoken->TokenSecret != nullptr)
+				{
+					this->logininfo->IsLogged = true;
+					this->tweetsFromFriendsToolStripMenuItem->Enabled = true;
+				}
+				this->llaccount->Text = ConfigurationManager::AppSettings["username"];
 			}
 		}
 	public: Dimebrain::TweetSharp::TwitterClientInfo^ tcInfo;
+	public: LoginInfo^ logininfo;
 	public: System::Windows::Forms::LinkLabel^  llaccount;
 	private: System::Windows::Forms::Label^  label1;
 	private: System::Windows::Forms::ToolStripMenuItem^  lastToolStripMenuItem;
@@ -165,10 +174,10 @@ namespace ProcTweet {
 			// lastToolStripMenuItem
 			// 
 			this->lastToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->tweetsFromFriendsToolStripMenuItem});
-			this->lastToolStripMenuItem->Enabled = false;
 			this->lastToolStripMenuItem->Name = L"lastToolStripMenuItem";
 			this->lastToolStripMenuItem->Size = System::Drawing::Size(43, 20);
 			this->lastToolStripMenuItem->Text = L"Last";
+			this->lastToolStripMenuItem->DropDownOpening += gcnew System::EventHandler(this, &MainWin::lastToolStripMenuItem_DropDownOpening);
 			// 
 			// tweetsFromFriendsToolStripMenuItem
 			// 
@@ -338,7 +347,11 @@ namespace ProcTweet {
 	
 	private: System::Void sendbutton_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
-		ProcTweetCsharp::MainWinFunctions::SendTweet(this->currenttweet, this->llaccount->Text, this->tweetbox, this->tcInfo);
+		if (logininfo->IsLogged)
+			ProcTweetCsharp::MainWinFunctions::SendTweet(this->currenttweet, this->logininfo, this->tweetbox);
+		else
+			MessageBox::Show("Your account is not configured. Go to File/Settings and verify your credentials.", "Not logged",
+				MessageBoxButtons::OK, MessageBoxIcon::Information);
 	}
 
 	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) 
@@ -370,21 +383,28 @@ namespace ProcTweet {
 		 }
 	private: System::Void tweetsFromFriendsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
 		{		
-			ProcTweetCsharp::Utilities::GetLastFriendsTweets(25, this->authtoken, this->tcInfo);
+			ProcTweetCsharp::Utilities::GetLastFriendsTweets(25, this->logininfo);
 		}
 
-private: System::Void currenttweet_Load(System::Object^  sender, System::EventArgs^  e) 
+	private: System::Void currenttweet_Load(System::Object^  sender, System::EventArgs^  e) 
 		 {
-			 if (this->llaccount->Text != "")
+			 if (logininfo->IsLogged)
 			 {
 				try
 				{
-					ProcTweetCsharp::MainWinFunctions::RefreshStatus(this->currenttweet, this->llaccount->Text);
+					ProcTweetCsharp::MainWinFunctions::RefreshStatus(this->currenttweet, this->logininfo);
 				}
 				catch (Exception^ E)
 				{
 					MessageBox::Show(E->Message+" "+ E->StackTrace, "Error !", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
 				}
+			 }
+		 }
+private: System::Void lastToolStripMenuItem_DropDownOpening(System::Object^  sender, System::EventArgs^  e) 
+		 {
+			 if (logininfo->IsLogged)
+			 {
+				 this->tweetsFromFriendsToolStripMenuItem->Enabled = true;
 			 }
 		 }
 };

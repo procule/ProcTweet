@@ -11,6 +11,7 @@ using Dimebrain.TweetSharp.Extensions;
 using Dimebrain.TweetSharp.Fluent;
 using Dimebrain.TweetSharp.Model;
 using MSXML;
+using EPB;
 using System.Text.RegularExpressions;
 
 
@@ -22,6 +23,36 @@ namespace ProcTweetCsharp
         private static string StripHtml(string inputString)
         {
             return Regex.Replace(inputString, HtmlTagPattern, string.Empty);
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Gets an authorisation token and puts it in the configuration file. </summary>
+        ///
+        /// <remarks>   Olivier Gagnon, 2009-11-13. </remarks>
+        ///
+        /// <param name="logininfo">    The login informations. </param>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        public static void GetAuthToken(LoginInfo logininfo)
+        {
+            Configuration oConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            IFluentTwitter tf = FluentTwitter.CreateRequest(logininfo.TcInfo);
+
+            tf.Configuration.UseUrlShortening(ShortenUrlServiceProvider.TinyUrl);
+
+            OAuthToken rtoken = tf.Authentication.GetRequestToken(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret).Request().AsToken();
+
+            tf.Authentication.AuthorizeDesktop(rtoken.Token);
+
+            var epb = new EnterPinBox();
+            logininfo.Authtoken =
+                tf.Authentication.GetAccessToken(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret, rtoken.Token,
+                                                 (string)epb.PIN).Request().AsToken();
+            oConfig.AppSettings.Settings.Remove("atoken");
+            oConfig.AppSettings.Settings.Add("atoken", logininfo.Authtoken.Token);
+            oConfig.AppSettings.Settings.Remove("atokens");
+            oConfig.AppSettings.Settings.Add("atokens", logininfo.Authtoken.TokenSecret);
+            oConfig.Save();
+            logininfo.IsLogged = true;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,26 +91,26 @@ namespace ProcTweetCsharp
         /// <remarks>   Olivier Gagnon, 2009-11-09. </remarks>
         ///
         /// <param name="numberOfTweets">   Number of tweets. </param>
-        /// <param name="authToken">        The authorisation token. </param>
-        /// <param name="tcInfo">           Information describing the Twitter client. </param>
+        /// <param name="logininfo">        The login informations. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        public static void GetLastFriendsTweets(int numberOfTweets, OAuthToken authToken, TwitterClientInfo tcInfo)
+
+        public static void GetLastFriendsTweets(int numberOfTweets, LoginInfo logininfo)
         {
             var tweetWin = new TweetWin();
-            /*var ac = AccountInfo.GetTwitterAccountInfo();
+            var ac = AccountInfo.GetTwitterAccountInfo(logininfo.Username);
 
             // Set background image from twitter
             var uri = new Uri(ac.Background);
             System.IO.Stream s =
-                System.Net.WebRequest.Create(uri)
+                WebRequest.Create(uri)
                 .GetResponse().GetResponseStream();
             Image backimg = Image.FromStream(s);
 
             tweetWin.TweetPanel.BackgroundImage = backimg;
-            tweetWin.TweetPanel.BackColor = Color.Transparent;*/
+            tweetWin.TweetPanel.BackColor = Color.Transparent;
 
             string twitter = FluentTwitter.CreateRequest()
-                .AuthenticateWith(tcInfo.ConsumerKey, tcInfo.ConsumerSecret, authToken.Token, authToken.TokenSecret)
+                .AuthenticateWith(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret, logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret)
                 .Statuses().OnFriendsTimeline().Take(numberOfTweets).AsXml().Request();
 
             var xmldoc = new XmlDocument();

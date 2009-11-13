@@ -13,6 +13,21 @@ using MSXML;
 
 namespace ProcTweetCsharp
 {
+    public class LoginInfo
+    {
+        public LoginInfo()
+        {
+            IsLogged = false;
+            Username = "";
+        }
+
+        public bool IsLogged { get; set; }
+        public string Username { get; set; }
+        public TwitterClientInfo TcInfo { get; set; }
+        public OAuthToken Authtoken { get; set; }
+
+    }
+
     public class MainWinFunctions
     {
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,9 +36,11 @@ namespace ProcTweetCsharp
         /// <remarks>   Olivier Gagnon, 2009-11-10. </remarks>
         ///
         /// <param name="currenttweet"> The currenttweet. </param>
-        /// <param name="llaccount">    The llaccount. </param>
+        /// <param name="logininfo">    The login informations. </param>
+        ///
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        public static void RefreshStatus(Tweet currenttweet, string llaccount)
+
+        public static void RefreshStatus(Tweet currenttweet, LoginInfo logininfo)
         {
             TwitterUser profile;
 
@@ -32,7 +49,7 @@ namespace ProcTweetCsharp
                 currenttweet.TweetText.Text = "Allons chercher votre status.......";
                 currenttweet.TweetText.Update();
                 profile =
-                    FluentTwitter.CreateRequest().Users().ShowProfileFor(llaccount).AsJson().Request().AsUser();
+                    FluentTwitter.CreateRequest().Users().ShowProfileFor(logininfo.Username).AsJson().Request().AsUser();
 
                 currenttweet.TweetImage.Load(profile.ProfileImageUrl);
                 currenttweet.TweetText.Font =
@@ -52,56 +69,25 @@ namespace ProcTweetCsharp
         /// <remarks>   Olivier Gagnon, 2009-11-11. </remarks>
         ///
         /// <param name="currenttweet"> The currenttweet control. </param>
-        /// <param name="llaccount">    The account. </param>
+        /// <param name="logininfo">    The login informations. </param>
         /// <param name="tweetbox">     The tweetbox control. </param>
-        /// <param name="tcInfo">       Information describing the Twitter client. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        public static void SendTweet(Tweet currenttweet, string llaccount, TextBox tweetbox, TwitterClientInfo tcInfo)
+
+        public static void SendTweet(Tweet currenttweet, LoginInfo logininfo, TextBox tweetbox)
         {
             try
             {
-                Configuration oConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                IFluentTwitter tf = FluentTwitter.CreateRequest(tcInfo);
-                OAuthToken rtoken;
-                OAuthToken atoken;
-
-                if (ConfigurationManager.AppSettings["atoken"] == "")
-                {
-                    tf.Configuration.UseUrlShortening(ShortenUrlServiceProvider.TinyUrl);
-
-                    rtoken =
-                        tf.Authentication.GetRequestToken(tcInfo.ConsumerKey, tcInfo.ConsumerSecret).Request().AsToken();
-
-                    tf.Authentication.AuthorizeDesktop(rtoken.Token);
-
-                    var epb = new EnterPinBox();
-                    atoken =
-                        tf.Authentication.GetAccessToken(tcInfo.ConsumerKey, tcInfo.ConsumerSecret, rtoken.Token,
-                                                         (string) epb.PIN).Request().AsToken();
-                    oConfig.AppSettings.Settings.Remove("atoken");
-                    oConfig.AppSettings.Settings.Add("atoken", atoken.Token);
-                    oConfig.AppSettings.Settings.Remove("atokens");
-                    oConfig.AppSettings.Settings.Add("atokens", atoken.TokenSecret);
-                    oConfig.Save();
-                }
-                else
-                {
-                    atoken = new OAuthToken
-                                 {
-                                     Token = ConfigurationManager.AppSettings["atoken"],
-                                     TokenSecret = ConfigurationManager.AppSettings["atokens"]
-                                 };
-                }
+                IFluentTwitter tf = FluentTwitter.CreateRequest(logininfo.TcInfo);
 
                 string request =
-                    tf.AuthenticateWith(atoken.Token, atoken.TokenSecret).Statuses().Update(tweetbox.Text).AsJson().
+                    tf.AuthenticateWith(logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret).Statuses().Update(tweetbox.Text).AsJson().
                         Request();
 
-                RefreshStatus(currenttweet, llaccount);
+                RefreshStatus(currenttweet, logininfo);
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Erreur lors de l'envoi du TWEET", MessageBoxButtons.OK,
+                MessageBox.Show(e.Message, "Error sending tweet", MessageBoxButtons.OK,
                                 MessageBoxIcon.Exclamation);
             }
         }

@@ -1,0 +1,41 @@
+commit e80b2d7397c115313e7205f8feb7eb338459917b
+Author: Olivier Gagnon <procule@gmail.com>
+Date:   Fri Nov 13 11:17:11 2009 -0500
+
+    - Add checks for authentication where the function needs an authtoken.
+    
+    - Disable features needing auth by default and enable them if the authtoken is in the configuration.
+    
+    - Some fixes and comments
+
+commit 6ae97bb562097d7505bad70ffbf0d352db4a07b6
+Author: Olivier Gagnon <procule@gmail.com>
+Date:   Fri Nov 13 08:56:39 2009 -0500
+
+    Create LoginInfo class
+
+commit af39b56f8d599b68087471b8660b4428d6eb9691
+Author: Olivier Gagnon <procule@gmail.com>
+Date:   Fri Nov 13 08:09:49 2009 -0500
+
+    Change default Tweet image
+
+commit a88d08de692d8d29edafc7ad038c95fef19b272c
+Author: Olivier Gagnon <procule@gmail.com>
+Date:   Thu Nov 12 22:27:10 2009 -0500
+
+    You need to login before accessing commands in menu
+
+commit ec973fe53fb069194ea485ac958a962d39432737
+Author: Olivier Gagnon <procule@gmail.com>
+Date:   Thu Nov 12 17:19:32 2009 -0500
+
+    Fixed some little things
+    
+    Signed-off-by: Olivier Gagnon <procule@gmail.com>
+
+commit c59adea9bf5bf6b7f01ddd3ff98310cbe7f9f031
+Author: unknown <ogagnon@.expra.com>
+Date:   Thu Nov 12 15:58:11 2009 -0500
+
+    Initial commit
