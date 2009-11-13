@@ -46,6 +46,7 @@ System::Void ProcTweetSettings::bsave_Click(System::Object^  sender, System::Eve
 System::Void ProcTweetSettings::bsetuser_Click(System::Object^  sender, System::EventArgs^  e)
 {
 	ProcTweetSettings^ PTSForm = (ProcTweetSettings^) (((System::Windows::Forms::Control^)(((System::Windows::Forms::ButtonBase^)(((System::Windows::Forms::Button^)(sender)))))))->Tag;
+	MainWin^ MW = (MainWin^) PTSForm->Owner;
 	String^ username = PTSForm->tsuser->Text;
 	String^ password = PTSForm->tspassword->Text;
 
@@ -61,6 +62,11 @@ System::Void ProcTweetSettings::bsetuser_Click(System::Object^  sender, System::
 			PTSForm->tsuser->Enabled = false;
 			PTSForm->tspassword->Enabled = false;
 			PTSForm->bsetuser->Enabled = false;
+
+			MW->logininfo->Username = PTSForm->tsuser->Text;
+			
+			if (MW->logininfo->Authtoken->TokenSecret == nullptr)
+				ProcTweetCsharp::Utilities::GetAuthToken(MW->logininfo);
 
 			NetUserInfo^ UNI = gcnew NetUserInfo;
 			PTSForm->lville->Text = UNI->Location;
