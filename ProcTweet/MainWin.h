@@ -97,7 +97,6 @@ namespace ProcTweet {
 	private: System::Windows::Forms::ToolStripStatusLabel^  toolStripStatusLabel1;
 	private: System::Windows::Forms::Button^  sendbutton;
 	private: System::Windows::Forms::GroupBox^  groupBox2;
-	private: System::Windows::Forms::Button^  button1;
 	private: System::Windows::Forms::ToolStripMenuItem^  aboutToolStripMenuItem;
 
 	private:
@@ -129,7 +128,6 @@ namespace ProcTweet {
 			this->sendbutton = (gcnew System::Windows::Forms::Button());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
 			this->currenttweet = (gcnew ProcTweetCsharp::Tweet());
-			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->llaccount = (gcnew System::Windows::Forms::LinkLabel());
 			this->MProcTweet->SuspendLayout();
@@ -273,16 +271,6 @@ namespace ProcTweet {
 			this->currenttweet->TabIndex = 0;
 			this->currenttweet->Load += gcnew System::EventHandler(this, &MainWin::currenttweet_Load);
 			// 
-			// button1
-			// 
-			this->button1->Location = System::Drawing::Point(170, 197);
-			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(75, 23);
-			this->button1->TabIndex = 11;
-			this->button1->Text = L"button1";
-			this->button1->UseVisualStyleBackColor = true;
-			this->button1->Click += gcnew System::EventHandler(this, &MainWin::button1_Click);
-			// 
 			// label1
 			// 
 			this->label1->AutoSize = true;
@@ -313,7 +301,6 @@ namespace ProcTweet {
 			this->ClientSize = System::Drawing::Size(326, 384);
 			this->Controls->Add(this->llaccount);
 			this->Controls->Add(this->label1);
-			this->Controls->Add(this->button1);
 			this->Controls->Add(this->groupBox2);
 			this->Controls->Add(this->sendbutton);
 			this->Controls->Add(this->ncharlabel);
@@ -354,17 +341,6 @@ namespace ProcTweet {
 				MessageBoxButtons::OK, MessageBoxIcon::Information);
 	}
 
-	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) 
-		 {
-			 try
-			 {
-				 ProcTweetCsharp::Utilities::Button1();
-			 }
-			 catch (Exception^ E)
-			 {
-							MessageBox::Show(E->Message+" "+ E->StackTrace, "Erreur !", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
-			 }
-		 }
 	private: System::Void FileSettingsStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
 		 {
 			 ProcTweetSettings^ PTSettings = gcnew ProcTweetSettings;
