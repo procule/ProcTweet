@@ -13,6 +13,24 @@ using MSXML;
 
 namespace ProcTweetCsharp
 {
+    public class LoginInfo
+    {
+        public LoginInfo()
+        {
+            IsLogged = false;
+            Username = "";
+            TcInfo = new TwitterClientInfo();
+            Authtoken = new OAuthToken();
+
+        }
+
+        public bool IsLogged { get; set; }
+        public string Username { get; set; }
+        public TwitterClientInfo TcInfo { get; set; }
+        public OAuthToken Authtoken { get; set; }
+
+    }
+
     public class MainWinFunctions
     {
         ////////////////////////////////////////////////////////////////////////////////////////////////////
