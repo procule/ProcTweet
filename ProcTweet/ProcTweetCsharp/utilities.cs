@@ -136,9 +136,6 @@ namespace ProcTweetCsharp
             }
             tweetWin.Show();
         }
-        public static void Button1()
-        {
-        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
