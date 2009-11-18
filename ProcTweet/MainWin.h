@@ -14,6 +14,7 @@ namespace ProcTweet {
 	using namespace System::Drawing;
 	using namespace System::Text;
 	using namespace System::Net;
+	using namespace System::Threading;
 	using namespace Dimebrain::TweetSharp::Model;
 	using namespace Dimebrain::TweetSharp::Fluent;
 	using namespace Dimebrain::TweetSharp::Extensions;
@@ -360,8 +361,9 @@ namespace ProcTweet {
 			 System::Diagnostics::Process::Start(link);
 		 }
 	private: System::Void tweetsFromFriendsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
-		{		
-			ProcTweetCsharp::Utilities::GetLastFriendsTweets(25, this->logininfo);
+		{	
+			Thread^ t = gcnew Thread(gcnew ParameterizedThreadStart(ProcTweetCsharp::Utilities::GetLastFriendsTweets));
+            t->Start(this->logininfo);
 		}
 
 	private: System::Void currenttweet_Load(System::Object^  sender, System::EventArgs^  e) 

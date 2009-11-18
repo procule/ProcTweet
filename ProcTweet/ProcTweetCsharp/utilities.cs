@@ -3,6 +3,7 @@ using System.IO;
 using System.Configuration;
 using System.Drawing;
 using System.Net;
+using System.Threading;
 using System.Windows.Forms;
 using Dimebrain.TweetSharp;
 using Dimebrain.TweetSharp.Extensions;
@@ -99,13 +100,13 @@ namespace ProcTweetCsharp
         ///
         /// <remarks>   Olivier Gagnon, 2009-11-09. </remarks>
         ///
-        /// <param name="numberOfTweets">   Number of tweets. </param>
-        /// <param name="logininfo">        The login informations. </param>
+        /// <param name="sender">   Source of the event. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static void GetLastFriendsTweets(int numberOfTweets, LoginInfo logininfo)
+        public static void GetLastFriendsTweets(object sender)
         {
-            
+            int numberOfTweets = 25;
+            var logininfo = (LoginInfo) sender;
             var ac = AccountInfo.GetTwitterAccountInfo(logininfo.Username);
 
             // Set background image from twitter
@@ -145,7 +146,7 @@ namespace ProcTweetCsharp
                 tw.TweetPanel.Controls.Add(tweet);
                 i++;
             }
-            tw.Show();
+            Application.Run(tw);
         }
     }
 
