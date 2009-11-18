@@ -107,11 +107,24 @@ namespace ProcTweetCsharp
             Image backimg = Image.FromStream(s);
 
             tweetWin.TweetPanel.BackgroundImage = backimg;
-            //tweetWin.TweetPanel.BackColor = Color.Transparent;
+            tweetWin.TweetPanel.BackColor = Color.Transparent;
 
             string twitter = FluentTwitter.CreateRequest()
                 .AuthenticateWith(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret, logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret)
                 .Statuses().OnFriendsTimeline().Take(numberOfTweets).AsXml().Request();
+            var reqleft = FluentTwitter.CreateRequest()
+                .AuthenticateWith(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret,
+                                  logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret)
+                .Account().GetRateLimitStatus().AsXml().Request();
+
+            var xmlleft = new XmlDocument();
+            xmlleft.LoadXml(reqleft);
+            var nodeleft = xmlleft.SelectNodes("/hash");
+            string hitsleft = nodeleft[0].SelectSingleNode("remaining-hits").InnerText + "/" +
+                              nodeleft[0].SelectSingleNode("hourly-limit").InnerText + " hits remaining. Resets at: " +
+                              DateTime.Parse(nodeleft[0].SelectSingleNode("reset-time").InnerText).ToShortTimeString();
+
+            tweetWin.StatusText.Text = hitsleft;
 
             var xmldoc = new XmlDocument();
             xmldoc.LoadXml(twitter);

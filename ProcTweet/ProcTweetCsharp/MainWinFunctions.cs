@@ -46,7 +46,7 @@ namespace ProcTweetCsharp
 
             try
             {
-                currenttweet.TweetText.Text = "Allons chercher votre status.......";
+                currenttweet.TweetText.Text = "Retrieving status.......";
                 currenttweet.TweetText.Update();
                 profile =
                     FluentTwitter.CreateRequest().Users().ShowProfileFor(logininfo.Username).AsJson().Request().AsUser();
