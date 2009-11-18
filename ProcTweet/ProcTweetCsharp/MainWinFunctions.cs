@@ -56,6 +56,8 @@ namespace ProcTweetCsharp
                     (new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, Byte.Parse("0")));
                 currenttweet.TweetText.Text = profile.Status.Text;
                 currenttweet.ltimeago.Text = profile.Status.CreatedDate.ToRelativeTime();
+                currenttweet.lluser.Text = profile.ScreenName;
+                currenttweet.lvia.Text = "via " + Utilities.StripHtml(profile.Status.Source);
             }
             catch (Exception e)
             {

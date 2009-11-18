@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Windows.Forms;
 
 namespace ProcTweetCsharp
@@ -125,7 +126,9 @@ namespace ProcTweetCsharp
 
         private void lluser_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-
+            var llaccount = (LinkLabel)sender;
+            var link = "http://twitter.com/" + HttpUtility.UrlEncode(llaccount.Text);
+            System.Diagnostics.Process.Start(link);
         }
     }
 }

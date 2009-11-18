@@ -20,7 +20,7 @@ namespace ProcTweetCsharp
     public class Utilities
     {
         private const string HtmlTagPattern = "<.*?>";
-        private static string StripHtml(string inputString)
+        public static string StripHtml(string inputString)
         {
             return Regex.Replace(inputString, HtmlTagPattern, string.Empty);
         }
@@ -107,7 +107,7 @@ namespace ProcTweetCsharp
             Image backimg = Image.FromStream(s);
 
             tweetWin.TweetPanel.BackgroundImage = backimg;
-            tweetWin.TweetPanel.BackColor = Color.Transparent;
+            //tweetWin.TweetPanel.BackColor = Color.Transparent;
 
             string twitter = FluentTwitter.CreateRequest()
                 .AuthenticateWith(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret, logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret)

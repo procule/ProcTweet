@@ -39,6 +39,7 @@ namespace ProcTweetCsharp
             // 
             this.TweetPanel.AutoScroll = true;
             this.TweetPanel.AutoSize = true;
+            this.TweetPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.TweetPanel.Controls.Add(this._stweetstatus);
             this.TweetPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TweetPanel.Location = new System.Drawing.Point(0, 0);
@@ -66,7 +67,6 @@ namespace ProcTweetCsharp
             this.Name = "TweetWin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TweetWin";
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TweetWin_KeyPress);
             this.TweetPanel.ResumeLayout(false);
             this.TweetPanel.PerformLayout();
             this.ResumeLayout(false);
@@ -85,11 +85,5 @@ namespace ProcTweetCsharp
             InitializeComponent();
 
         }
-
-        private void TweetWin_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            MessageBox.Show(e.KeyChar.ToString());
-        }
-
     }
 }
