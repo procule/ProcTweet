@@ -64,6 +64,7 @@ System::Void ProcTweetSettings::bsetuser_Click(System::Object^  sender, System::
 			PTSForm->bsetuser->Enabled = false;
 
 			MW->logininfo->Username = PTSForm->tsuser->Text;
+			MW->logininfo->Password = PTSForm->tspassword->Text;
 			
 			if (MW->logininfo->Authtoken->TokenSecret == nullptr)
 				ProcTweetCsharp::Utilities::GetAuthToken(MW->logininfo);

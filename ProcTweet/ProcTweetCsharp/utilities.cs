@@ -1,24 +1,23 @@
 ﻿using System;
+using System.IO;
 using System.Configuration;
 using System.Drawing;
 using System.Net;
-using System.Text;
-using System.Web;
-using System.Xml;
 using System.Windows.Forms;
 using Dimebrain.TweetSharp;
 using Dimebrain.TweetSharp.Extensions;
 using Dimebrain.TweetSharp.Fluent;
 using Dimebrain.TweetSharp.Model;
-using MSXML;
 using EPB;
 using System.Text.RegularExpressions;
+using Dimebrain.TweetSharp.Core.Web;
 
 
 namespace ProcTweetCsharp
 {
     public class Utilities
     {
+        public static TweetWin tw = new TweetWin();
         private const string HtmlTagPattern = "<.*?>";
         public static string StripHtml(string inputString)
         {
@@ -67,22 +66,32 @@ namespace ProcTweetCsharp
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         public static bool VerifyTwitterCredentials(string username, string password)
         {
-            var xmldoc = new DOMDocument();
-
-            ITwitterLeafNode twitter = FluentTwitter.CreateRequest()
+            var twitter = FluentTwitter.CreateRequest()
                 .AuthenticateAs(username, password)
-                .Account().VerifyCredentials().AsXml();
-            string xmlresponse = twitter.Request();
-
-            xmldoc.loadXML(xmlresponse);
-            IXMLDOMNodeList xmlnode = xmldoc.documentElement.getElementsByTagName("error");
-
-            if (xmlnode.length == 1)
+                .Account().VerifyCredentials().AsJson().Request();
+            
+            var response = twitter.AsUser();
+            if (response == null)
             {
                 MessageBox.Show("Authentication failed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             return true;
+        }
+
+        private static void OnRequestReturn (object sender, WebQueryResponseEventArgs e)
+        {
+            Console.WriteLine(e.Response);
+            var crate = e.Response.AsRateLimitStatus();
+            string chitsleft = String.Format("{0}/{1} hits remaining. Resets at: {2}",
+              crate.RemainingHits,crate.HourlyLimit,
+              crate.ResetTime.TimeOfDay);
+            if (tw.InvokeRequired)
+            {
+                tw.Invoke((Action)(() => { tw.StatusText.Text = chitsleft; }));
+            }
+            else
+                tw.StatusText.Text = chitsleft;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,58 +105,47 @@ namespace ProcTweetCsharp
 
         public static void GetLastFriendsTweets(int numberOfTweets, LoginInfo logininfo)
         {
-            var tweetWin = new TweetWin();
+            
             var ac = AccountInfo.GetTwitterAccountInfo(logininfo.Username);
 
             // Set background image from twitter
             var uri = new Uri(ac.Background);
-            System.IO.Stream s =
-                WebRequest.Create(uri)
+            Stream s = WebRequest.Create(uri)
                 .GetResponse().GetResponseStream();
             Image backimg = Image.FromStream(s);
 
-            tweetWin.TweetPanel.BackgroundImage = backimg;
-            tweetWin.TweetPanel.BackColor = Color.Transparent;
+            tw.TweetPanel.BackgroundImage = backimg;
+            tw.TweetPanel.BackColor = Color.Transparent;
 
+            FluentTwitter.CreateRequest()
+                .AuthenticateAs(logininfo.Username, logininfo.Password)
+                .Account().GetRateLimitStatus().AsJson()
+                .CallbackTo(OnRequestReturn)
+                .RepeatEvery(1.Minute()).RequestAsync();
+            
+
+            // Create Tweets and show
             string twitter = FluentTwitter.CreateRequest()
-                .AuthenticateWith(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret, logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret)
-                .Statuses().OnFriendsTimeline().Take(numberOfTweets).AsXml().Request();
-            var reqleft = FluentTwitter.CreateRequest()
                 .AuthenticateWith(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret,
                                   logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret)
-                .Account().GetRateLimitStatus().AsXml().Request();
+                .Statuses().OnFriendsTimeline().Take(numberOfTweets).AsJson()
+                .Request();
 
-            var xmlleft = new XmlDocument();
-            xmlleft.LoadXml(reqleft);
-            var nodeleft = xmlleft.SelectNodes("/hash");
-            string hitsleft = nodeleft[0].SelectSingleNode("remaining-hits").InnerText + "/" +
-                              nodeleft[0].SelectSingleNode("hourly-limit").InnerText + " hits remaining. Resets at: " +
-                              DateTime.Parse(nodeleft[0].SelectSingleNode("reset-time").InnerText).ToShortTimeString();
-
-            tweetWin.StatusText.Text = hitsleft;
-
-            var xmldoc = new XmlDocument();
-            xmldoc.LoadXml(twitter);
-
-            var nodeList = xmldoc.SelectNodes("/statuses/status");
-            if (nodeList != null)
+            var response = twitter.AsStatuses();
+            var i = 0;
+            foreach (TwitterStatus ts in response)
             {
-                var tweets = new Tweet[nodeList.Count];
-                for (int i = 0; i < nodeList.Count; i++)
-                {
-                    tweets[i] = new Tweet();
-                    tweets[i].Location = new Point(0, (0 + i * 100));
-                    tweets[i].TweetText.Text = nodeList[i].SelectSingleNode("text").InnerText;
-                    tweets[i].TweetImage.ImageLocation = nodeList[i].SelectSingleNode("user/profile_image_url").InnerText;
-                    tweets[i].lluser.Text = nodeList[i].SelectSingleNode("user/screen_name").InnerText;
-                    tweets[i].lvia.Text = "via " + StripHtml(nodeList[i].SelectSingleNode("source").InnerText);
-                    tweets[i].ltimeago.Text = TwitterDateTime.ConvertToDateTime(
-                        nodeList[i].SelectSingleNode("created_at").InnerText).
-                        ToRelativeTime();
-                    tweetWin.TweetPanel.Controls.Add(tweets[i]);
-                }
+                var tweet = new Tweet();
+                tweet.Location = new Point(0, (0 + i*100));
+                tweet.TweetText.Text = ts.Text;
+                tweet.TweetImage.ImageLocation = ts.User.ProfileImageUrl;
+                tweet.lluser.Text = ts.User.ScreenName;
+                tweet.lvia.Text = "via " + StripHtml(ts.Source);
+                tweet.ltimeago.Text = ts.CreatedDate.ToRelativeTime();
+                tw.TweetPanel.Controls.Add(tweet);
+                i++;
             }
-            tweetWin.Show();
+            tw.Show();
         }
     }
 
@@ -185,17 +183,37 @@ namespace ProcTweetCsharp
         public static AccountInfo GetTwitterAccountInfo(string username)
         {
             var ac = new AccountInfo(username);
-            var xmldoc = new DOMDocument();
-            var xmlresponse = FluentTwitter.CreateRequest()
-                .Users().ShowProfileFor(username).AsXml().Request();
+            var request = FluentTwitter.CreateRequest()
+                .Users().ShowProfileFor(username).AsJson().Request();
+            var response = request.AsUser();
 
-            xmldoc.loadXML(xmlresponse);
+            ac.Name = response.Name;
+            ac.Bio = response.Description;
+            ac.Background = response.ProfileBackgroundImageUrl;
 
-            ac.Name = xmldoc.documentElement.selectSingleNode("/user/name").text;
-            ac.Bio = xmldoc.documentElement.selectSingleNode("/user/description").text;
-            ac.Background = xmldoc.documentElement.selectSingleNode("/user/profile_background_image_url").text;
             return ac;
         }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <summary>   Information about the login. </summary>
+    ///
+    /// <remarks>   Olivier Gagnon, 2009-11-18. </remarks>
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public class LoginInfo
+    {
+        public LoginInfo()
+        {
+            IsLogged = false;
+            Username = "";
+        }
+
+        public bool IsLogged { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public TwitterClientInfo TcInfo { get; set; }
+        public OAuthToken Authtoken { get; set; }
+
     }
 
 }

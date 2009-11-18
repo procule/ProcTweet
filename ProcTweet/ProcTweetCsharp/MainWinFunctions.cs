@@ -13,21 +13,6 @@ using MSXML;
 
 namespace ProcTweetCsharp
 {
-    public class LoginInfo
-    {
-        public LoginInfo()
-        {
-            IsLogged = false;
-            Username = "";
-        }
-
-        public bool IsLogged { get; set; }
-        public string Username { get; set; }
-        public TwitterClientInfo TcInfo { get; set; }
-        public OAuthToken Authtoken { get; set; }
-
-    }
-
     public class MainWinFunctions
     {
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,15 +27,13 @@ namespace ProcTweetCsharp
 
         public static void RefreshStatus(Tweet currenttweet, LoginInfo logininfo)
         {
-            TwitterUser profile;
-
             try
             {
                 currenttweet.TweetText.Text = "Retrieving status.......";
                 currenttweet.TweetText.Update();
-                profile =
-                    FluentTwitter.CreateRequest().Users().ShowProfileFor(logininfo.Username).AsJson().Request().AsUser();
-
+                var request =
+                    FluentTwitter.CreateRequest().Users().ShowProfileFor(logininfo.Username).AsJson().Request();
+                var profile = request.AsUser();
                 currenttweet.TweetImage.Load(profile.ProfileImageUrl);
                 currenttweet.TweetText.Font =
                     (new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, Byte.Parse("0")));

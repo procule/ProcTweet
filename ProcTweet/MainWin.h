@@ -55,9 +55,11 @@ namespace ProcTweet {
 			if (ConfigurationManager::AppSettings["username"] != nullptr)
 			{
 				this->logininfo->Username = ConfigurationManager::AppSettings["username"];
+				this->logininfo->Password = ConfigurationManager::AppSettings["password"];
 				this->logininfo->Authtoken->Token = ConfigurationManager::AppSettings["atoken"];
 				this->logininfo->Authtoken->TokenSecret = ConfigurationManager::AppSettings["atokens"];
-				if (this->logininfo->Authtoken->Token != nullptr && this->logininfo->Authtoken->TokenSecret != nullptr)
+				if (this->logininfo->Authtoken->Token != nullptr && this->logininfo->Authtoken->TokenSecret != nullptr &&
+					this->logininfo->Password != nullptr)
 				{
 					this->logininfo->IsLogged = true;
 					this->tweetsFromFriendsToolStripMenuItem->Enabled = true;
