@@ -1,8 +1,9 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace ProcTweetCsharp
 {
-    public class TweetWin : Form
+    public sealed class TweetWin : Form
     {
         /// <summary>
         /// Required designer variable.
@@ -69,7 +70,6 @@ namespace ProcTweetCsharp
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "TweetWin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "TweetWin";
             this.Stweetstatus.ResumeLayout(false);
             this.Stweetstatus.PerformLayout();
             this.ResumeLayout(false);
@@ -84,11 +84,11 @@ namespace ProcTweetCsharp
 
 
         public Panel TweetPanel;
-        public TweetWin()
+        public TweetWin(string title)
         {
             
             InitializeComponent();
-
+            Text = title;
         }
     }
 }
