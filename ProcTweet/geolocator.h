@@ -9,7 +9,7 @@ using namespace System::Net;
 using namespace System::Xml;
 using namespace System::Diagnostics;
 using namespace System::Windows::Forms;
-using namespace MSXML;
+using namespace MSXML2;
 
 namespace ProcTweet {
 

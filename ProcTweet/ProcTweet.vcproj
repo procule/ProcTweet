@@ -214,8 +214,8 @@
 			MinFrameworkVersion="196613"
 		/>
 		<ActiveXReference
-			ControlGUID="{D63E0CE2-A0A2-11D0-9C02-00C04FC99C8E}"
-			ControlVersion="2.0"
+			ControlGUID="{F5078F18-C551-11D3-89B9-0000F81FE221}"
+			ControlVersion="6.0"
 			LocaleID="0"
 		/>
 		<AssemblyReference

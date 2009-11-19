@@ -9,7 +9,7 @@ using Dimebrain.TweetSharp.Extensions;
 using Dimebrain.TweetSharp.Fluent;
 using Dimebrain.TweetSharp.Model;
 using EPB;
-using MSXML;
+using MSXML2;
 
 namespace ProcTweetCsharp
 {

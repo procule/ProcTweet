@@ -50,49 +50,52 @@ namespace ProcTweetCsharp
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         public static void GetLastFriendsTweets (object sender)
         {
-            var tw = new TweetWin("Last Tweets from Friends");
-            int numberOfTweets = 25;
-            var logininfo = (LoginInfo) sender;
-            AccountInfo ac = AccountInfo.GetTwitterAccountInfo(logininfo.Username);
-
-            // Set background image from twitter
-            var uri = new Uri(ac.Background);
-            Stream s = WebRequest.Create(uri)
-                .GetResponse().GetResponseStream();
-            Image backimg = Image.FromStream(s);
-
-            tw.TweetPanel.BackgroundImage = backimg;
-            tw.TweetPanel.BackColor = Color.Transparent;
-
-            FluentTwitter.CreateRequest()
-                .AuthenticateAs(logininfo.Username, logininfo.Password)
-                .Account().GetRateLimitStatus().AsJson()
-                .CallbackTo((f,e) => OnRequestReturn(tw, e))
-                .RepeatEvery(1.Minute()).RequestAsync();
-
-
-            // Create Tweets and show
-            string twitter = FluentTwitter.CreateRequest()
-                .AuthenticateWith(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret,
-                                  logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret)
-                .Statuses().OnFriendsTimeline().Take(numberOfTweets).AsJson()
-                .Request();
-
-            IEnumerable<TwitterStatus> response = twitter.AsStatuses();
-            int i = 0;
-            foreach (TwitterStatus ts in response)
+            lock (locker)
             {
-                var tweet = new Tweet();
-                tweet.Location = new Point(0, (0 + i*100));
-                tweet.TweetText.Text = ts.Text;
-                tweet.TweetImage.ImageLocation = ts.User.ProfileImageUrl;
-                tweet.lluser.Text = ts.User.ScreenName;
-                tweet.lvia.Text = "via " + Utilities.StripHtml(ts.Source);
-                tweet.ltimeago.Text = ts.CreatedDate.ToRelativeTime();
-                tw.TweetPanel.Controls.Add(tweet);
-                i++;
+                var tw = new TweetWin("Last Tweets from Friends");
+                int numberOfTweets = 25;
+                var logininfo = (LoginInfo)sender;
+                AccountInfo ac = AccountInfo.GetTwitterAccountInfo(logininfo.Username);
+
+                // Set background image from twitter
+                var uri = new Uri(ac.Background);
+                Stream s = WebRequest.Create(uri)
+                    .GetResponse().GetResponseStream();
+                Image backimg = Image.FromStream(s);
+
+                tw.TweetPanel.BackgroundImage = backimg;
+                tw.TweetPanel.BackColor = Color.Transparent;
+
+                FluentTwitter.CreateRequest()
+                    .AuthenticateAs(logininfo.Username, logininfo.Password)
+                    .Account().GetRateLimitStatus().AsJson()
+                    .CallbackTo((f, e) => OnRequestReturn(tw, e))
+                    .RepeatEvery(1.Minute()).RequestAsync();
+
+
+                // Create Tweets and show
+                string twitter = FluentTwitter.CreateRequest()
+                    .AuthenticateWith(logininfo.TcInfo.ConsumerKey, logininfo.TcInfo.ConsumerSecret,
+                                      logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret)
+                    .Statuses().OnFriendsTimeline().Take(numberOfTweets).AsJson()
+                    .Request();
+
+                IEnumerable<TwitterStatus> response = twitter.AsStatuses();
+                int i = 0;
+                foreach (TwitterStatus ts in response)
+                {
+                    var tweet = new Tweet();
+                    tweet.Location = new Point(0, (0 + i * 100));
+                    tweet.TweetText.Text = ts.Text;
+                    tweet.TweetImage.ImageLocation = ts.User.ProfileImageUrl;
+                    tweet.lluser.Text = ts.User.ScreenName;
+                    tweet.lvia.Text = "via " + Utilities.StripHtml(ts.Source);
+                    tweet.ltimeago.Text = ts.CreatedDate.ToRelativeTime();
+                    tw.TweetPanel.Controls.Add(tweet);
+                    i++;
+                }
+                Application.Run(tw);
             }
-            Application.Run(tw);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
