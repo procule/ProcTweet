@@ -123,6 +123,7 @@ namespace ProcTweet {
 			this->aboutToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->lastToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->tweetsFromFriendsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->mentionsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->sstatus = (gcnew System::Windows::Forms::StatusStrip());
 			this->toolStripStatusLabel1 = (gcnew System::Windows::Forms::ToolStripStatusLabel());
 			this->toolStripStatusRem = (gcnew System::Windows::Forms::ToolStripStatusLabel());
@@ -134,7 +135,6 @@ namespace ProcTweet {
 			this->currenttweet = (gcnew ProcTweetCsharp::Tweet());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->llaccount = (gcnew System::Windows::Forms::LinkLabel());
-			this->mentionsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->MProcTweet->SuspendLayout();
 			this->sstatus->SuspendLayout();
 			this->groupBox1->SuspendLayout();
@@ -177,7 +177,7 @@ namespace ProcTweet {
 			// lastToolStripMenuItem
 			// 
 			this->lastToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->tweetsFromFriendsToolStripMenuItem, 
-				this->mentionsToolStripMenuItem});
+				this->mentionsToolStripMenuItem);
 			this->lastToolStripMenuItem->Name = L"lastToolStripMenuItem";
 			this->lastToolStripMenuItem->Size = System::Drawing::Size(43, 20);
 			this->lastToolStripMenuItem->Text = L"Last";
@@ -190,6 +190,14 @@ namespace ProcTweet {
 			this->tweetsFromFriendsToolStripMenuItem->Size = System::Drawing::Size(219, 22);
 			this->tweetsFromFriendsToolStripMenuItem->Text = L"25 tweets from friends";
 			this->tweetsFromFriendsToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWin::tweetsFromFriendsToolStripMenuItem_Click);
+			// 
+			// mentionsToolStripMenuItem
+			// 
+			this->mentionsToolStripMenuItem->Enabled = false;
+			this->mentionsToolStripMenuItem->Name = L"mentionsToolStripMenuItem";
+			this->mentionsToolStripMenuItem->Size = System::Drawing::Size(219, 22);
+			this->mentionsToolStripMenuItem->Text = L"Mentions";
+			this->mentionsToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWin::mentionsToolStripMenuItem_Click);
 			// 
 			// sstatus
 			// 
@@ -300,14 +308,6 @@ namespace ProcTweet {
 			this->llaccount->VisitedLinkColor = System::Drawing::Color::Blue;
 			this->llaccount->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &MainWin::llaccount_LinkClicked);
 			// 
-			// mentionsToolStripMenuItem
-			// 
-			this->mentionsToolStripMenuItem->Enabled = false;
-			this->mentionsToolStripMenuItem->Name = L"mentionsToolStripMenuItem";
-			this->mentionsToolStripMenuItem->Size = System::Drawing::Size(219, 22);
-			this->mentionsToolStripMenuItem->Text = L"Mentions";
-			this->mentionsToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWin::mentionsToolStripMenuItem_Click);
-			// 
 			// MainWin
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -374,6 +374,7 @@ namespace ProcTweet {
 	private: System::Void tweetsFromFriendsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
 		{	
 			Thread^ t = gcnew Thread(gcnew ParameterizedThreadStart(ProcTweetCsharp::Requests::GetLastFriendsTweets));
+			t->Name = "TweetWin Friends";
 			t->Start(this->logininfo);
 		}
 
@@ -402,6 +403,7 @@ private: System::Void lastToolStripMenuItem_DropDownOpening(System::Object^  sen
 private: System::Void mentionsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
 		 {
 			Thread^ t = gcnew Thread(gcnew ParameterizedThreadStart(ProcTweetCsharp::Requests::GetMentions));
+			t->Name = "TweetWin Mentions";
 			t->Start(this->logininfo);
 		 }
 };

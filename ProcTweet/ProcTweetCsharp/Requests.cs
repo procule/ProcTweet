@@ -13,8 +13,6 @@ namespace ProcTweetCsharp
 {
     public class Requests
     {
-        public static TweetWin tw { get; set; }
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Executes the request return action. </summary>
         ///
@@ -23,7 +21,7 @@ namespace ProcTweetCsharp
         /// <param name="sender">   Source of the event. </param>
         /// <param name="e">        Event information to send to registered event handlers. </param>
         ///////////////////////////////////////////////////////////////////////////////////////////////////
-        private static void OnRequestReturn(object sender, WebQueryResponseEventArgs e)
+        private static void OnRequestReturn(TweetWin tw, WebQueryResponseEventArgs e)
         {
             Console.WriteLine(e.Response);
             TwitterRateLimitStatus crate = e.Response.AsRateLimitStatus();
@@ -47,7 +45,7 @@ namespace ProcTweetCsharp
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         public static void GetLastFriendsTweets (object sender)
         {
-            tw = new TweetWin("Last Tweets from Friends");
+            var tw = new TweetWin("Last Tweets from Friends");
             int numberOfTweets = 25;
             var logininfo = (LoginInfo) sender;
             AccountInfo ac = AccountInfo.GetTwitterAccountInfo(logininfo.Username);
@@ -64,7 +62,7 @@ namespace ProcTweetCsharp
             FluentTwitter.CreateRequest()
                 .AuthenticateAs(logininfo.Username, logininfo.Password)
                 .Account().GetRateLimitStatus().AsJson()
-                .CallbackTo(OnRequestReturn)
+                .CallbackTo((f,e) => OnRequestReturn(tw, e))
                 .RepeatEvery(1.Minute()).RequestAsync();
 
 
@@ -101,7 +99,7 @@ namespace ProcTweetCsharp
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         public static void GetMentions(object sender)
         {
-            tw = new TweetWin("Mentions");
+            var tw = new TweetWin("Mentions");
             var logininfo = (LoginInfo) sender;
             AccountInfo ac = AccountInfo.GetTwitterAccountInfo(logininfo.Username);
 
@@ -117,7 +115,7 @@ namespace ProcTweetCsharp
             FluentTwitter.CreateRequest()
                 .AuthenticateAs(logininfo.Username, logininfo.Password)
                 .Account().GetRateLimitStatus().AsJson()
-                .CallbackTo(OnRequestReturn)
+                .CallbackTo((f, e) => OnRequestReturn(tw, e))
                 .RepeatEvery(1.Minute()).RequestAsync();
 
 
