@@ -377,6 +377,12 @@ namespace ProcTweet {
 			t->Name = "TweetWin Friends";
 			t->IsBackground = true;
 			t->Start(this->logininfo);
+			t->Sleep(500);
+			if ((t->ThreadState & System::Threading::ThreadState::WaitSleepJoin) == System::Threading::ThreadState::WaitSleepJoin)
+			{
+				// This TweetWin is already open
+				t->Abort();
+			}
 		}
 
 	private: System::Void currenttweet_Load(System::Object^  sender, System::EventArgs^  e) 
@@ -407,6 +413,12 @@ private: System::Void mentionsToolStripMenuItem_Click(System::Object^  sender, S
 			t->Name = "TweetWin Mentions";
 			t->IsBackground = true;
 			t->Start(this->logininfo);
+			t->Sleep(500);
+			if ((t->ThreadState & System::Threading::ThreadState::WaitSleepJoin) == System::Threading::ThreadState::WaitSleepJoin)
+			{
+				// This TweetWin is already open
+				t->Abort();
+			}
 		 }
 };
 }

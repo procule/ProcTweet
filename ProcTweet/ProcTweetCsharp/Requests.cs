@@ -10,6 +10,7 @@ using Dimebrain.TweetSharp.Core.Web;
 using Dimebrain.TweetSharp.Extensions;
 using Dimebrain.TweetSharp.Fluent;
 using Dimebrain.TweetSharp.Model;
+using ThreadState=System.Threading.ThreadState;
 
 namespace ProcTweetCsharp
 {
@@ -23,16 +24,17 @@ namespace ProcTweetCsharp
         ///
         /// <remarks>   Olivier Gagnon, 2009-11-18. </remarks>
         ///
-        /// <param name="sender">   Source of the event. </param>
-        /// <param name="e">        Event information to send to registered event handlers. </param>
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <param name="tw">   The TweetWin. </param>
+        /// <param name="e">    Event information to send to registered event handlers. </param>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
         private static void OnRequestReturn(TweetWin tw, WebQueryResponseEventArgs e)
         {
             Console.WriteLine(e.Response);
             TwitterRateLimitStatus crate = e.Response.AsRateLimitStatus();
             string chitsleft = String.Format("{0}/{1} hits remaining. Resets at: {2}",
                                              crate.RemainingHits, crate.HourlyLimit,
-                                             crate.ResetTime.TimeOfDay);
+                                             crate.ResetTime.ToLocalTime().TimeOfDay);
             if (tw.InvokeRequired)
             {
                 tw.Invoke((Action) (() => { tw.StatusText.Text = chitsleft; }));
