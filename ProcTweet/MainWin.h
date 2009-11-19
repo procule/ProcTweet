@@ -177,7 +177,7 @@ namespace ProcTweet {
 			// lastToolStripMenuItem
 			// 
 			this->lastToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->tweetsFromFriendsToolStripMenuItem, 
-				this->mentionsToolStripMenuItem);
+				this->mentionsToolStripMenuItem});
 			this->lastToolStripMenuItem->Name = L"lastToolStripMenuItem";
 			this->lastToolStripMenuItem->Size = System::Drawing::Size(43, 20);
 			this->lastToolStripMenuItem->Text = L"Last";
@@ -375,6 +375,7 @@ namespace ProcTweet {
 		{	
 			Thread^ t = gcnew Thread(gcnew ParameterizedThreadStart(ProcTweetCsharp::Requests::GetLastFriendsTweets));
 			t->Name = "TweetWin Friends";
+			t->IsBackground = true;
 			t->Start(this->logininfo);
 		}
 
@@ -404,6 +405,7 @@ private: System::Void mentionsToolStripMenuItem_Click(System::Object^  sender, S
 		 {
 			Thread^ t = gcnew Thread(gcnew ParameterizedThreadStart(ProcTweetCsharp::Requests::GetMentions));
 			t->Name = "TweetWin Mentions";
+			t->IsBackground = true;
 			t->Start(this->logininfo);
 		 }
 };
