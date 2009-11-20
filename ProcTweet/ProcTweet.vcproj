@@ -95,7 +95,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
-			ManagedExtensions="2"
+			ManagedExtensions="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -244,10 +244,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\geolocator.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ProcTweet.config"
 				>
 			</File>
@@ -289,10 +285,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\geolocator.h"
-				>
-			</File>
 			<File
 				RelativePath=".\MainWin.h"
 				FileType="3"

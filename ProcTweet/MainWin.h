@@ -1,6 +1,5 @@
 #pragma once
 
-#include "geolocator.h"
 #include "ProcTweetSettings.h"
 
 namespace ProcTweet {
@@ -368,7 +367,7 @@ namespace ProcTweet {
 	private: System::Void llaccount_LinkClicked(System::Object^  sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^  e) 
 		 {
 			 LinkLabel^ llaccount = (LinkLabel^)sender;
-			 String^ link = "http://twitter.com/" + HttpUtility::UrlEncode(llaccount->Text);
+			 String^ link = "http://twitter.com/" + System::Web::HttpUtility::UrlEncode(llaccount->Text);
 			 System::Diagnostics::Process::Start(link);
 		 }
 	private: System::Void tweetsFromFriendsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 

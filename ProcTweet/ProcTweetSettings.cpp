@@ -69,9 +69,9 @@ System::Void ProcTweetSettings::bsetuser_Click(System::Object^  sender, System::
 			if (MW->logininfo->Authtoken->TokenSecret == nullptr)
 				ProcTweetCsharp::Utilities::GetAuthToken(MW->logininfo);
 
-			NetUserInfo^ UNI = gcnew NetUserInfo;
+			ProcTweetCsharp::Utilities::NetUserInfo^ UNI = gcnew ProcTweetCsharp::Utilities::NetUserInfo;
 			PTSForm->lville->Text = UNI->Location;
-			PTSForm->lcoords->Text = NetUserInfo::GetGeoLocationFromGoogle(UNI->Location);
+			PTSForm->lcoords->Text = ProcTweetCsharp::Utilities::NetUserInfo::GetGeoLocationFromGoogle(UNI->Location);
 
 			ProcTweetCsharp::AccountInfo^ ac = ProcTweetCsharp::AccountInfo::GetTwitterAccountInfo(PTSForm->tsuser->Text);
 			PTSForm->lname->Text = ac->Name;
@@ -92,7 +92,7 @@ System::Void ProcTweetSettings::bsetuser_Click(System::Object^  sender, System::
 System::Void ProcTweetSettings::lcoords_LinkClicked(System::Object^  sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^  e) 
 {
 		LinkLabel^ lcoords = (LinkLabel^)sender;
-		String^ link = "http://maps.google.com/maps?f=q&source=proctweet&z=12&q=" + HttpUtility::UrlEncode(lcoords->Text);
+		String^ link = "http://maps.google.com/maps?f=q&source=proctweet&z=12&q=" + System::Web::HttpUtility::UrlEncode(lcoords->Text);
 		System::Diagnostics::Process::Start(link);
 }
 

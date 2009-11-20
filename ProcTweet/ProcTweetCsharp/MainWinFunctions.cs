@@ -63,10 +63,24 @@ namespace ProcTweetCsharp
             try
             {
                 IFluentTwitter tf = FluentTwitter.CreateRequest(logininfo.TcInfo);
-
-                string request =
-                    tf.AuthenticateWith(logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret).Statuses().Update(tweetbox.Text).AsJson().
+                if (ConfigurationManager.AppSettings["geolocation"].Equals("1"))
+                {
+                    var geol = new GeoLocation();
+                    var uni = new Utilities.NetUserInfo();
+                    string ll = Utilities.NetUserInfo.GetGeoLocationFromGoogle(uni.Location);
+                    string r = ",";
+                    var coords = ll.Split(r.ToCharArray());
+                    string request =
+                        tf.AuthenticateWith(logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret).Statuses().Update(tweetbox.Text, double.Parse(coords[0]), double.Parse(coords[1])).AsJson().
                         Request();
+                }
+                else
+                {
+                    string request =
+                            tf.AuthenticateWith(logininfo.Authtoken.Token, logininfo.Authtoken.TokenSecret).Statuses().
+                            Update(tweetbox.Text).AsJson().
+                            Request();
+                }
 
                 RefreshStatus(currenttweet, logininfo);
             }
